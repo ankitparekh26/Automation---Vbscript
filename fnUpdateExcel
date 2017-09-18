@@ -1,0 +1,114 @@
+''************************************************************************************************************************************************************************
+' Function:    fnUpdateExcel
+' Description: Function to update Excel
+' Author:	Ankit Parekh
+' Date of Creation :  28 Aug 2017
+' Input Parameters:   
+' Output Parameters : NA
+' Usage of Function : fnUpdateExcel()	 
+' Modification Summary  History : 
+' Sr.No      	 Modified By    			 Change Description       		Modification Date		
+'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Public Function fnUpdateExcel()
+
+On Error Resume Next
+blnFlag = False
+   
+	'Get reference for the excel
+     Set objExcel = GetObject(, "Excel.Application")
+	 
+	'To make Excel visible
+	objExcel.Application.Visible = true 
+  
+	Set objSheet = objExcel.Worksheets("Sheet1")			'------ Company code is passed here
+	Set objRange = objSheet.UsedRange
+	Ser objCells = objSheet.Cells
+
+' Get the number of used rows
+  nUsedRows = objSheet.UsedRange.Rows.Count
+
+  ' Get the number of used columns
+  nUsedCols = objSheet.UsedRange.Columns.Count
+
+  ' Get the topmost row that has data
+  nTop = objSheet.UsedRange.Row
+
+  ' Get leftmost column that has data
+  nLeft = objSheet.UsedRange.Column
+
+  ' Get the used cells
+  Set objCells = objSheet.Cells
+  
+'  ------------ To get specific Item Code for which value needs to be updated
+
+  ReDim arrSheet(nUsedRows - 1, nUsedCols - 1)
+
+  ' Loop through each row
+  For nRow = 0 To (nUsedRows - 1)
+    ' Loop through each column
+    For nCol = 0 To (nUsedCols - 1)
+  ' Add the cell value to the sheet array
+  arrSheet(nRow, nCol) = objCells(nRow + nTop, nCol + nLeft).Value
+  
+  	If Ucase((objCells(nRow + nTop, nCol + nLeft).Value)) <> Ucase(strItemCode) Then    '---- Item Code is passed here
+  		blnStatus = 0
+  		Exit for
+  	Else
+  		blnStatus = 1
+  		tempRow = nRow		'------ To get the Row number
+  		tempCol = nCol
+  	End If
+    Next
+    	If blnStatus = 1 Then
+    		Exit For
+    	End If
+  Next
+  
+  
+'  ----------------------------------------------------  To get data from all columns for particular Item code 
+
+ ReDim arrSheet1(nUsedRows - 1, nUsedCols - 1)
+
+    ' Loop through each column
+    For n_Col = 0 To (nUsedCols - 1)
+  ' Add the cell value to the sheet array
+  arrSheet1(tempRow, n_Col) = objCells(tempRow + nTop, n_Col + nLeft).Value
+
+  Next
+
+'  ----------------------------------------------------------------------------------------  To get all the Columns value which exist in the first Row. Get all Years info
+
+ ReDim arrSheet2(nUsedRows - 1, nUsedCols - 1)
+ 
+ n_Row = 0
+
+    ' Loop through each column
+    For n_Col = 0 To (nUsedCols - 1)
+  ' Add the cell value to the sheet array
+  arrSheet2(n_Row, n_Col) = objCells(n_Row + nTop, n_Col + nLeft).Value
+  
+  		If instr(1,(objCells(n_Row + nTop, n_Col + nLeft).Value),strPeriod) Then			'Period is passed here
+  			temp_col = n_Col         '------ To get the Column number
+  		End If
+
+  Next
+  
+'  ------------------------------------------------------------------------------ 
+  
+'  For i=0 To Ubound(arrSheet2,1)    '--- Convert to Ubound first dimensional Array
+'  	
+'  	For j=0  To Ubound(arrSheet2,2)		'--- Convert to Ubound Second dimensional Array
+'  		
+'  		If Instr(1,arrSheet2(i,j),"12/09(A)") Then
+'  			blnStatus = "Found"
+'  			temp_row = i
+'  			temp_col = j
+'  			Exit For
+'  		End If
+'  	Next
+'  		If blnStatus="Found" Then
+'  			Exit For
+'  		End If
+'  Next
+  
+  
