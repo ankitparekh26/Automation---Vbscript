@@ -1,0 +1,48 @@
+''************************************************************************************************************************************************************************
+' Function:    fnOpenExcel
+' Description: Function to open new Excel
+' Author:	Ankit Parekh
+' Date of Creation :  28 Aug 2017
+' Input Parameters:   NA
+' Output Parameters : NA
+' Usage of Function : NA	 
+' Modification Summary  History : 
+' Sr.No      	 Modified By    			 Change Description       		Modification Date		
+'--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Public Function fnOpenExcel()
+
+On Error Resume Next
+blnFlag = False
+   
+	'Create a new Microsoft Excel object   	
+     Set objExcel = CreateObject("Excel.Application") 
+	 
+	'To make Excel visible
+	objExcel.Application.Visible = true 
+  
+	objExcel.Workbooks.Add
+	wait 5
+
+'this is the name of  Sheet  in Excel file 
+Set objSheet = objExcel.ActiveWorkbook.Worksheets("Sheet1")
+
+If objSheet<>0 Then
+	Reporter.ReportEvent micPass,"fnOpenExcel :", "Excel opened successfully."
+	blnFlag = True
+Else
+	Reporter.ReportEvent micFail,"fnOpenExcel :", "Excel not opened successfully."
+	blnFlag = False
+End If
+
+If Err.Number<>0  Then
+	Reporter.ReportEvent micFail,"fnOpenExcel"," Issue was encountered while opening Excel : "&Err.Description
+End If
+
+
+Set objExcel=nothing
+Set objSheet=nothing
+
+fnOpenExcel = blnFlag
+           
+End Function
