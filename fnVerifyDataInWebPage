@@ -1,0 +1,48 @@
+'	'*******************************************************************************************************************************
+	' Function:  fnVerifyDataInWebPage
+	' Description: Function to verify If  required values are presnt in a web page
+	' Author:	
+	' Date of Creation : 
+	' Input Parameters: strVerifyString --> presence of string to be verified in a web page,strPresence --> Present/Not Present
+	' Output Parameters :  True/False depending upon the match
+	' Usage of Function : 	blnResult=fnVerifyDataInWebPage 
+	' Modification Summary  History : 
+	' Sr.No      	 Modified By    			 Change Description       		Modification Date		
+'	'---------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	Public Function fnVerifyDataInWebPage(strVerifyString,strPresence)
+
+						strVerifyString=Trim(strVerifyString)
+						strPresence=Trim(strPresence)
+						Browser("brwDmart").Sync
+						Set BrowserObj = Description.Create
+						BrowserObj("micclass").Value = "Browser"
+						Set Obj = Desktop.ChildObjects(BrowserObj)
+						blnFound=False
+'						If Instr(1,(Browser("micclass:=Browser").Page("micclass:=Page").Object.documentElement.outertext),strVerifyString)<>0 Then
+''						If Instr(1,(Browser("micclass:=Browser").Page("micclass:=Page").Frame("micclass:=Frame").Object.documentElement.outerhtml),strVerifyString)<>0 Then
+'							blnFound=True
+'						End If
+						
+						intCount = Obj.Count
+						For i = 0 To intCount-1
+							If Instr(1,(Browser("creationtime:="&i).Page("micclass:=Page").Frame("micclass:=Frame").Object.documentElement.innerHtml),strVerifyString)<>0 Then
+								blnFound=True
+								Exit For
+							ElseIf Instr (1,(Browser("creationtime:="&i).Page("micclass:=Page").Object.documentElement.outerHtml),strVerifyString)<>0 Then
+								blnFound=True
+								Exit For
+							End If
+						Next
+
+					If blnFound=True and Instr(1,Ucase(strPresence),"NO")=0   Then
+						Reporter.ReportEvent micPass,"fnVerifyDataInWebPage","Required String Present in a Web page :=" & strVerifyString
+						fnVerifyDataInWebPage=True
+					ElseIf blnFound=False  and Instr(1,Ucase(strPresence),"NO")<>0   Then
+						Reporter.ReportEvent micFail,"fnVerifyDataInWebPage","Required String NOT Present in a Web page as Expected  :=" & strVerifyString
+						fnVerifyDataInWebPage=False
+					Else 
+						fnVerifyDataInWebPage=False
+					End If
+	
+	End Function
