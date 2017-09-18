@@ -1,0 +1,53 @@
+'--------------------------------------------------------------------
+' Function: fnCloseExcel
+' Description: This function can be used for closing excel.
+' Author:	Ankit Parekh
+' Date of Creation : 28 Aug 2017
+' Modification Summary  History : 
+' Sr.No      	 Modified By    			 Change Description       		Modification Date
+'  
+' Input Parameters:(strFileName) 
+' Output Parameters : True / False
+' Usage of Function : 
+'--------------------------------------------------------------------
+
+Function fnCloseExcel()
+
+On Error Resume Next
+blnFlag = False
+
+Set objExcel = GetObject(, "Excel.Application")
+
+objExcel.Application.Visible = true 
+objExcel .close
+wait(1)
+
+objExcel.Quit
+
+	On Error Resume Next
+		Dim strComputer,colProcessList,objWMIService
+			
+				strComputer = "." 
+				Set objWMIService = GetObject("winmgmts:" _ 
+				& "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2") 
+				Set colProcessList = objWMIService.ExecQuery _ 
+				("Select * from Win32_Process Where Name = 'EXCEL.EXE*32'") 
+				For Each objProcess in colProcessList 
+				objProcess.Terminate() 
+				Next
+				SystemUtil.CloseProcessByName("EXCEL.EXE*32")
+						fnCloseExcel=True
+
+If err.number = 0 Then
+							Reporter.ReportEvent micPass,"fnCloseExcel","Excel Closed successfully."
+							blnFlag = True
+				Else
+							Reporter.ReportEvent micFail,"fnCloseExcel","Excel not closed successfully. Error message :- " & err.description
+							blnFlag = False
+				End If
+
+Set objExcel=nothing
+
+fnCloseExcel = blnFlag
+	
+End FUnction
